@@ -5,13 +5,6 @@ import (
 	"fmt"
 )
 
-func IsDeviceAvailable(osString string, deviceTypeString string) error {
-	simCtlWrapper := NewSimCtlWrapper()
-	environmentParser := NewEnvironmentParser(simCtlWrapper)
-	availability := NewSimulatorAvailability(environmentParser)
-	return availability.CheckAvailability(osString, deviceTypeString)
-}
-
 type SimulatorAvailability interface {
 	CheckAvailability(string, string) error
 }

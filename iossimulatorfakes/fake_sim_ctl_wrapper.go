@@ -15,6 +15,41 @@ type FakeSimCtlWrapper struct {
 		result1 []byte
 		result2 error
 	}
+	CreateStub        func(name string, runtime string, deviceType string) (string, error)
+	createMutex       sync.RWMutex
+	createArgsForCall []struct {
+		name       string
+		runtime    string
+		deviceType string
+	}
+	createReturns struct {
+		result1 string
+		result2 error
+	}
+	BootStub        func(deviceIdentifier string) error
+	bootMutex       sync.RWMutex
+	bootArgsForCall []struct {
+		deviceIdentifier string
+	}
+	bootReturns struct {
+		result1 error
+	}
+	ShutdownStub        func(deviceIdentifier string) error
+	shutdownMutex       sync.RWMutex
+	shutdownArgsForCall []struct {
+		deviceIdentifier string
+	}
+	shutdownReturns struct {
+		result1 error
+	}
+	DeleteStub        func(deviceIdentifier string) error
+	deleteMutex       sync.RWMutex
+	deleteArgsForCall []struct {
+		deviceIdentifier string
+	}
+	deleteReturns struct {
+		result1 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -45,11 +80,154 @@ func (fake *FakeSimCtlWrapper) ListReturns(result1 []byte, result2 error) {
 	}{result1, result2}
 }
 
+func (fake *FakeSimCtlWrapper) Create(name string, runtime string, deviceType string) (string, error) {
+	fake.createMutex.Lock()
+	fake.createArgsForCall = append(fake.createArgsForCall, struct {
+		name       string
+		runtime    string
+		deviceType string
+	}{name, runtime, deviceType})
+	fake.recordInvocation("Create", []interface{}{name, runtime, deviceType})
+	fake.createMutex.Unlock()
+	if fake.CreateStub != nil {
+		return fake.CreateStub(name, runtime, deviceType)
+	} else {
+		return fake.createReturns.result1, fake.createReturns.result2
+	}
+}
+
+func (fake *FakeSimCtlWrapper) CreateCallCount() int {
+	fake.createMutex.RLock()
+	defer fake.createMutex.RUnlock()
+	return len(fake.createArgsForCall)
+}
+
+func (fake *FakeSimCtlWrapper) CreateArgsForCall(i int) (string, string, string) {
+	fake.createMutex.RLock()
+	defer fake.createMutex.RUnlock()
+	return fake.createArgsForCall[i].name, fake.createArgsForCall[i].runtime, fake.createArgsForCall[i].deviceType
+}
+
+func (fake *FakeSimCtlWrapper) CreateReturns(result1 string, result2 error) {
+	fake.CreateStub = nil
+	fake.createReturns = struct {
+		result1 string
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeSimCtlWrapper) Boot(deviceIdentifier string) error {
+	fake.bootMutex.Lock()
+	fake.bootArgsForCall = append(fake.bootArgsForCall, struct {
+		deviceIdentifier string
+	}{deviceIdentifier})
+	fake.recordInvocation("Boot", []interface{}{deviceIdentifier})
+	fake.bootMutex.Unlock()
+	if fake.BootStub != nil {
+		return fake.BootStub(deviceIdentifier)
+	} else {
+		return fake.bootReturns.result1
+	}
+}
+
+func (fake *FakeSimCtlWrapper) BootCallCount() int {
+	fake.bootMutex.RLock()
+	defer fake.bootMutex.RUnlock()
+	return len(fake.bootArgsForCall)
+}
+
+func (fake *FakeSimCtlWrapper) BootArgsForCall(i int) string {
+	fake.bootMutex.RLock()
+	defer fake.bootMutex.RUnlock()
+	return fake.bootArgsForCall[i].deviceIdentifier
+}
+
+func (fake *FakeSimCtlWrapper) BootReturns(result1 error) {
+	fake.BootStub = nil
+	fake.bootReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeSimCtlWrapper) Shutdown(deviceIdentifier string) error {
+	fake.shutdownMutex.Lock()
+	fake.shutdownArgsForCall = append(fake.shutdownArgsForCall, struct {
+		deviceIdentifier string
+	}{deviceIdentifier})
+	fake.recordInvocation("Shutdown", []interface{}{deviceIdentifier})
+	fake.shutdownMutex.Unlock()
+	if fake.ShutdownStub != nil {
+		return fake.ShutdownStub(deviceIdentifier)
+	} else {
+		return fake.shutdownReturns.result1
+	}
+}
+
+func (fake *FakeSimCtlWrapper) ShutdownCallCount() int {
+	fake.shutdownMutex.RLock()
+	defer fake.shutdownMutex.RUnlock()
+	return len(fake.shutdownArgsForCall)
+}
+
+func (fake *FakeSimCtlWrapper) ShutdownArgsForCall(i int) string {
+	fake.shutdownMutex.RLock()
+	defer fake.shutdownMutex.RUnlock()
+	return fake.shutdownArgsForCall[i].deviceIdentifier
+}
+
+func (fake *FakeSimCtlWrapper) ShutdownReturns(result1 error) {
+	fake.ShutdownStub = nil
+	fake.shutdownReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeSimCtlWrapper) Delete(deviceIdentifier string) error {
+	fake.deleteMutex.Lock()
+	fake.deleteArgsForCall = append(fake.deleteArgsForCall, struct {
+		deviceIdentifier string
+	}{deviceIdentifier})
+	fake.recordInvocation("Delete", []interface{}{deviceIdentifier})
+	fake.deleteMutex.Unlock()
+	if fake.DeleteStub != nil {
+		return fake.DeleteStub(deviceIdentifier)
+	} else {
+		return fake.deleteReturns.result1
+	}
+}
+
+func (fake *FakeSimCtlWrapper) DeleteCallCount() int {
+	fake.deleteMutex.RLock()
+	defer fake.deleteMutex.RUnlock()
+	return len(fake.deleteArgsForCall)
+}
+
+func (fake *FakeSimCtlWrapper) DeleteArgsForCall(i int) string {
+	fake.deleteMutex.RLock()
+	defer fake.deleteMutex.RUnlock()
+	return fake.deleteArgsForCall[i].deviceIdentifier
+}
+
+func (fake *FakeSimCtlWrapper) DeleteReturns(result1 error) {
+	fake.DeleteStub = nil
+	fake.deleteReturns = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeSimCtlWrapper) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.listMutex.RLock()
 	defer fake.listMutex.RUnlock()
+	fake.createMutex.RLock()
+	defer fake.createMutex.RUnlock()
+	fake.bootMutex.RLock()
+	defer fake.bootMutex.RUnlock()
+	fake.shutdownMutex.RLock()
+	defer fake.shutdownMutex.RUnlock()
+	fake.deleteMutex.RLock()
+	defer fake.deleteMutex.RUnlock()
 	return fake.invocations
 }
 
