@@ -1,6 +1,8 @@
 package iossimulator
 
 type SimulatorEnvironment struct {
+	DeviceTypes        map[string]string
+	Runtimes           map[string]string
 	RuntimeToDeviceMap map[string][]string
 }
 

@@ -18,19 +18,23 @@ var _ = Describe("EnvironmentParser", func() {
 		fakeSimCtlWrapper = new(iossimulatorfakes.FakeSimCtlWrapper)
 		fakeSimCtlWrapper.ListReturns(
 			[]byte("== Device Types ==\n"+
+				"iPhone 5 (iPhone-5-device-type-id)\n"+
+				"iPhone 6s (iPhone-6s-device-type-id)\n"+
 				"== Runtimes ==\n"+
+				"iOS 9.3 () (iOS-9-3-runtime-id)\n"+
+				"iOS 10.0 () (iOS-10-0-runtime-id)\n"+
 				"== Devices ==\n"+
 				"-- iOS 9.1 --\n"+
-				"	iPhone 4s (iPhone-4s-id) (iPhone4s-state)\n"+
-				"	iPhone 6 (iPhone-6-id) (iPhone-6-state)\n"+
+				"	iPhone 4s (iPhone-4s-sim-id) (iPhone4s-sim-state)\n"+
+				"	iPhone 6 (iPhone-6-sim-id) (iPhone-6-sim-state)\n"+
 				"-- iOS 10.0 --\n"+
-				"	iPhone 5 (iPhone-5-id) (iPhone5-state)\n"+
+				"	iPhone 5 (iPhone-5-sim-id) (iPhone5-sim-state)\n"+
 				"== Device Pairs =="),
 			nil)
 		subject = iossimulator.NewEnvironmentParser(fakeSimCtlWrapper)
 	})
 
-	It("returns a description of the sim environment based on use of 'simctl' command line tool", func() {
+	It("parses devices from `xcrun simctl list` into the sim environment model", func() {
 		environment := subject.ParseEnvironment()
 		Expect(environment).ToNot(BeNil())
 
@@ -42,5 +46,33 @@ var _ = Describe("EnvironmentParser", func() {
 
 		notThereDevices := environment.RuntimeToDeviceMap["iOS 8.0"]
 		Expect(notThereDevices).To(BeNil())
+	})
+
+	It("parses device types from `xcrun simctl list` into the sim environment model", func() {
+		environment := subject.ParseEnvironment()
+		Expect(environment).ToNot(BeNil())
+
+		fiveDeviceTypeId := environment.DeviceTypes["iPhone 5"]
+		Expect(fiveDeviceTypeId).To(Equal("iPhone-5-device-type-id"))
+
+		sixEssDeviceTypeId := environment.DeviceTypes["iPhone 6s"]
+		Expect(sixEssDeviceTypeId).To(Equal("iPhone-6s-device-type-id"))
+
+		notThereDeviceType := environment.DeviceTypes["iPhone 17"]
+		Expect(notThereDeviceType).To(Equal(""))
+	})
+
+	It("parses runtimes from `xcrun simctl list` into the sim environment model", func() {
+		environment := subject.ParseEnvironment()
+		Expect(environment).ToNot(BeNil())
+
+		nineThreeRuntimeId := environment.Runtimes["iOS 9.3"]
+		Expect(nineThreeRuntimeId).To(Equal("iOS-9-3-runtime-id"))
+
+		tenRuntimeId := environment.Runtimes["iOS 10.0"]
+		Expect(tenRuntimeId).To(Equal("iOS-10-0-runtime-id"))
+
+		notThereRuntime := environment.Runtimes["iOS 15.8"]
+		Expect(notThereRuntime).To(Equal(""))
 	})
 })

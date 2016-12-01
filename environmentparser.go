@@ -23,9 +23,17 @@ type environmentParser struct {
 
 func (p *environmentParser) ParseEnvironment() *SimulatorEnvironment {
 	environment := &SimulatorEnvironment{
-		RuntimeToDeviceMap: make(map[string][]string),
+		RuntimeToDeviceMap: parseDevices(p.simCtlWrapper),
+		DeviceTypes:        parseDeviceTypes(p.simCtlWrapper),
+		Runtimes:           parseRuntimes(p.simCtlWrapper),
 	}
-	infoBytes, err := p.simCtlWrapper.List()
+
+	return environment
+}
+
+func parseDevices(simCtlWrapper SimCtlWrapper) map[string][]string {
+	runtimeToDeviceMap := make(map[string][]string)
+	infoBytes, err := simCtlWrapper.List()
 
 	if err != nil {
 		log.Fatal(err)
@@ -50,7 +58,7 @@ func (p *environmentParser) ParseEnvironment() *SimulatorEnvironment {
 
 					}
 
-					environment.RuntimeToDeviceMap[runtimeString] = devices
+					runtimeToDeviceMap[runtimeString] = devices
 				} else {
 					infoScanner.Scan()
 				}
@@ -58,5 +66,59 @@ func (p *environmentParser) ParseEnvironment() *SimulatorEnvironment {
 		}
 	}
 
-	return environment
+	return runtimeToDeviceMap
+}
+
+func parseDeviceTypes(simCtlWrapper SimCtlWrapper) map[string]string {
+	deviceTypes := make(map[string]string)
+	infoBytes, err := simCtlWrapper.List()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	infoBuffer := bytes.NewBuffer(infoBytes)
+	infoScanner := bufio.NewScanner(infoBuffer)
+	for infoScanner.Scan() {
+		if infoScanner.Text() == "== Device Types ==" {
+			infoScanner.Scan()
+			for infoScanner.Text() != "== Runtimes ==" {
+				splitDeviceTypeFromIdResult := strings.SplitN(infoScanner.Text(), "(", 2)
+				deviceType := strings.Trim(splitDeviceTypeFromIdResult[0], " \t\n")
+				isolateDeviceTypeIdResult := strings.SplitN(splitDeviceTypeFromIdResult[1], ")", 2)
+				deviceTypeId := strings.Trim(isolateDeviceTypeIdResult[0], " \t\n")
+				deviceTypes[deviceType] = deviceTypeId
+				infoScanner.Scan()
+			}
+		}
+	}
+
+	return deviceTypes
+}
+
+func parseRuntimes(simCtlWrapper SimCtlWrapper) map[string]string {
+	runtimes := make(map[string]string)
+	infoBytes, err := simCtlWrapper.List()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	infoBuffer := bytes.NewBuffer(infoBytes)
+	infoScanner := bufio.NewScanner(infoBuffer)
+	for infoScanner.Scan() {
+		if infoScanner.Text() == "== Runtimes ==" {
+			infoScanner.Scan()
+			for infoScanner.Text() != "== Devices ==" {
+				splitRuntimeFromIdResult := strings.SplitN(infoScanner.Text(), "(", 3)
+				runtime := strings.Trim(splitRuntimeFromIdResult[0], " \t\n")
+				isolateRuntimeIdResult := strings.SplitN(splitRuntimeFromIdResult[2], ")", 2)
+				runtimeId := strings.Trim(isolateRuntimeIdResult[0], " \t\n")
+				runtimes[runtime] = runtimeId
+				infoScanner.Scan()
+			}
+		}
+	}
+
+	return runtimes
 }
