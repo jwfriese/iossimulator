@@ -33,7 +33,7 @@ func (w *simCtlWrapper) Create(name string, deviceType string, runtime string) (
 }
 
 func (w *simCtlWrapper) Boot(deviceIdentifier string) error {
-	bootCommand := exec.Command("xcrun", "simctl", "boot", deviceIdentifier)
+	bootCommand := exec.Command("open", "-a", "Simulator", "--args", "-CurrentDeviceUDID", deviceIdentifier)
 	_, err := bootCommand.Output()
 	return err
 }
