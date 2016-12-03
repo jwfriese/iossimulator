@@ -1,5 +1,9 @@
 package iossimulator
 
+import (
+	"time"
+)
+
 func IsDeviceAvailable(osString string, deviceTypeString string) error {
 	simCtlWrapper := NewSimCtlWrapper()
 	environmentParser := NewEnvironmentParser(simCtlWrapper)
@@ -18,6 +22,18 @@ func BootDevice(deviceIdentifier string) error {
 	simCtlWrapper := NewSimCtlWrapper()
 	director := NewDirector(simCtlWrapper)
 	return director.BootDevice(deviceIdentifier)
+}
+
+func WaitForDeviceToBeReady(deviceIdentifier string) error {
+	simCtlWrapper := NewSimCtlWrapper()
+	simulatorReadiness := NewSimulatorReadiness(simCtlWrapper)
+	isReady, err := simulatorReadiness.IsSimulatorReady(deviceIdentifier)
+	for !isReady && err == nil {
+		time.Sleep(100 * time.Millisecond)
+		isReady, err = simulatorReadiness.IsSimulatorReady(deviceIdentifier)
+	}
+
+	return err
 }
 
 func ShutdownDevice(deviceIdentifier string) error {

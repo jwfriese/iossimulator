@@ -1,6 +1,8 @@
 package iossimulator_test
 
 import (
+	"time"
+
 	"github.com/jwfriese/iossimulator"
 	"github.com/jwfriese/iossimulator/stringslice"
 
@@ -32,6 +34,8 @@ var _ = Describe("SimCtlWrapper", func() {
 
 		err = subject.Boot(newDeviceUuid)
 		Expect(err).ToNot(HaveOccurred())
+
+		time.Sleep(20000 * time.Millisecond)
 
 		err = subject.Shutdown(newDeviceUuid)
 		Expect(err).ToNot(HaveOccurred())

@@ -50,6 +50,15 @@ type FakeSimCtlWrapper struct {
 	deleteReturns struct {
 		result1 error
 	}
+	PrintSpringboardServiceAvailabilityStub        func(deviceIdentifier string) (string, error)
+	printSpringboardServiceAvailabilityMutex       sync.RWMutex
+	printSpringboardServiceAvailabilityArgsForCall []struct {
+		deviceIdentifier string
+	}
+	printSpringboardServiceAvailabilityReturns struct {
+		result1 string
+		result2 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -215,6 +224,40 @@ func (fake *FakeSimCtlWrapper) DeleteReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *FakeSimCtlWrapper) PrintSpringboardServiceAvailability(deviceIdentifier string) (string, error) {
+	fake.printSpringboardServiceAvailabilityMutex.Lock()
+	fake.printSpringboardServiceAvailabilityArgsForCall = append(fake.printSpringboardServiceAvailabilityArgsForCall, struct {
+		deviceIdentifier string
+	}{deviceIdentifier})
+	fake.recordInvocation("PrintSpringboardServiceAvailability", []interface{}{deviceIdentifier})
+	fake.printSpringboardServiceAvailabilityMutex.Unlock()
+	if fake.PrintSpringboardServiceAvailabilityStub != nil {
+		return fake.PrintSpringboardServiceAvailabilityStub(deviceIdentifier)
+	} else {
+		return fake.printSpringboardServiceAvailabilityReturns.result1, fake.printSpringboardServiceAvailabilityReturns.result2
+	}
+}
+
+func (fake *FakeSimCtlWrapper) PrintSpringboardServiceAvailabilityCallCount() int {
+	fake.printSpringboardServiceAvailabilityMutex.RLock()
+	defer fake.printSpringboardServiceAvailabilityMutex.RUnlock()
+	return len(fake.printSpringboardServiceAvailabilityArgsForCall)
+}
+
+func (fake *FakeSimCtlWrapper) PrintSpringboardServiceAvailabilityArgsForCall(i int) string {
+	fake.printSpringboardServiceAvailabilityMutex.RLock()
+	defer fake.printSpringboardServiceAvailabilityMutex.RUnlock()
+	return fake.printSpringboardServiceAvailabilityArgsForCall[i].deviceIdentifier
+}
+
+func (fake *FakeSimCtlWrapper) PrintSpringboardServiceAvailabilityReturns(result1 string, result2 error) {
+	fake.PrintSpringboardServiceAvailabilityStub = nil
+	fake.printSpringboardServiceAvailabilityReturns = struct {
+		result1 string
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeSimCtlWrapper) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
@@ -228,6 +271,8 @@ func (fake *FakeSimCtlWrapper) Invocations() map[string][][]interface{} {
 	defer fake.shutdownMutex.RUnlock()
 	fake.deleteMutex.RLock()
 	defer fake.deleteMutex.RUnlock()
+	fake.printSpringboardServiceAvailabilityMutex.RLock()
+	defer fake.printSpringboardServiceAvailabilityMutex.RUnlock()
 	return fake.invocations
 }
 

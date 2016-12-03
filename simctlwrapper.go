@@ -11,6 +11,7 @@ type SimCtlWrapper interface {
 	Boot(deviceIdentifier string) error
 	Shutdown(deviceIdentifier string) error
 	Delete(deviceIdentifier string) error
+	PrintSpringboardServiceAvailability(deviceIdentifier string) (string, error)
 }
 
 func NewSimCtlWrapper() SimCtlWrapper {
@@ -48,4 +49,12 @@ func (w *simCtlWrapper) Delete(deviceIdentifier string) error {
 	deleteCommand := exec.Command("xcrun", "simctl", "delete", deviceIdentifier)
 	_, err := deleteCommand.Output()
 	return err
+}
+
+func (w *simCtlWrapper) PrintSpringboardServiceAvailability(deviceIdentifier string) (string, error) {
+	command := exec.Command("xcrun", "simctl", "spawn", deviceIdentifier, "launchctl", "print", "system", "|", "grep", "com.apple.springboard.services")
+	bytes, err := command.Output()
+	untrimmedResult := string(bytes)
+	result := strings.Trim(untrimmedResult, " \t\n")
+	return result, err
 }
