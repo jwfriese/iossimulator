@@ -1,6 +1,7 @@
 package iossimulator
 
 import (
+	"os/exec"
 	"time"
 )
 
@@ -46,4 +47,9 @@ func DeleteDevice(deviceIdentifier string) error {
 	simCtlWrapper := NewSimCtlWrapper()
 	director := NewDirector(simCtlWrapper)
 	return director.DeleteDevice(deviceIdentifier)
+}
+
+func CloseSimulatorApp() error {
+	closeCommand := exec.Command("osascript", "-e", "tell app \"Simulator\" to quit")
+	return closeCommand.Run()
 }
