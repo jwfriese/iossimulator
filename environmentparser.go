@@ -110,10 +110,14 @@ func parseRuntimes(simCtlWrapper SimCtlWrapper) map[string]string {
 		if infoScanner.Text() == "== Runtimes ==" {
 			infoScanner.Scan()
 			for infoScanner.Text() != "== Devices ==" {
-				splitRuntimeFromIdResult := strings.SplitN(infoScanner.Text(), "(", 3)
-				runtime := strings.Trim(splitRuntimeFromIdResult[0], " \t\n")
-				isolateRuntimeIdResult := strings.SplitN(splitRuntimeFromIdResult[2], ")", 2)
-				runtimeId := strings.Trim(isolateRuntimeIdResult[0], " \t\n")
+				runtime, parseRuntimeErr := ParseRuntime(infoScanner.Text())
+				if parseRuntimeErr != nil {
+					log.Fatal(parseRuntimeErr)
+				}
+				runtimeId, parseRuntimeIdErr := ParseRuntimeId(infoScanner.Text())
+				if parseRuntimeIdErr != nil {
+					log.Fatal(parseRuntimeIdErr)
+				}
 				runtimes[runtime] = runtimeId
 				infoScanner.Scan()
 			}

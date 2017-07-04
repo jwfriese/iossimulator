@@ -21,8 +21,8 @@ var _ = Describe("EnvironmentParser", func() {
 				"iPhone 5 (iPhone-5-device-type-id)\n"+
 				"iPhone 6s (iPhone-6s-device-type-id)\n"+
 				"== Runtimes ==\n"+
-				"iOS 9.3 () (iOS-9-3-runtime-id)\n"+
-				"iOS 10.0 () (iOS-10-0-runtime-id)\n"+
+				"iOS 9.3 () (com.apple.iOS-9-3-runtime-id)\n"+
+				"iOS 10.0 () (com.apple.iOS-10-0-runtime-id)\n"+
 				"== Devices ==\n"+
 				"-- iOS 9.1 --\n"+
 				"	iPhone 4s (iPhone-4s-sim-id) (iPhone4s-sim-state)\n"+
@@ -67,10 +67,10 @@ var _ = Describe("EnvironmentParser", func() {
 		Expect(environment).ToNot(BeNil())
 
 		nineThreeRuntimeId := environment.Runtimes["iOS 9.3"]
-		Expect(nineThreeRuntimeId).To(Equal("iOS-9-3-runtime-id"))
+		Expect(nineThreeRuntimeId).To(Equal("com.apple.iOS-9-3-runtime-id"))
 
 		tenRuntimeId := environment.Runtimes["iOS 10.0"]
-		Expect(tenRuntimeId).To(Equal("iOS-10-0-runtime-id"))
+		Expect(tenRuntimeId).To(Equal("com.apple.iOS-10-0-runtime-id"))
 
 		notThereRuntime := environment.Runtimes["iOS 15.8"]
 		Expect(notThereRuntime).To(Equal(""))

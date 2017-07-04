@@ -1,6 +1,8 @@
 package iossimulator
 
 import (
+	"errors"
+	"fmt"
 	"os/exec"
 	"strings"
 )
@@ -22,33 +24,53 @@ type simCtlWrapper struct{}
 
 func (w *simCtlWrapper) List() ([]byte, error) {
 	getInfoCommand := exec.Command("xcrun", "simctl", "list")
-	return getInfoCommand.Output()
+	combinedOutput, err := getInfoCommand.CombinedOutput()
+	if err != nil {
+		return []byte(`Could not list`), errors.New(fmt.Sprintf("Error: %v\nFull output: %v", err, combinedOutput))
+	}
+
+	return combinedOutput, nil
 }
 
 func (w *simCtlWrapper) Create(name string, deviceType string, runtime string) (string, error) {
 	createCommand := exec.Command("xcrun", "simctl", "create", name, deviceType, runtime)
-	bytes, err := createCommand.Output()
-	untrimmedDeviceUuid := string(bytes)
+	combinedOutput, err := createCommand.CombinedOutput()
+	if err != nil {
+		return "", errors.New(fmt.Sprintf("Error: %v\nFull output: %v", err, string(combinedOutput)))
+	}
+	untrimmedDeviceUuid := string(combinedOutput)
 	deviceUuid := strings.Trim(untrimmedDeviceUuid, " \t\n")
-	return deviceUuid, err
+	return deviceUuid, nil
 }
 
 func (w *simCtlWrapper) Boot(deviceIdentifier string) error {
 	bootCommand := exec.Command("open", "-a", "Simulator", "--args", "-CurrentDeviceUDID", deviceIdentifier)
-	_, err := bootCommand.Output()
-	return err
+	combinedOutput, err := bootCommand.CombinedOutput()
+	if err != nil {
+		return errors.New(fmt.Sprintf("Error: %v\nFull output: %v", err, string(combinedOutput)))
+	}
+
+	return nil
 }
 
 func (w *simCtlWrapper) Shutdown(deviceIdentifier string) error {
 	shutdownCommand := exec.Command("xcrun", "simctl", "shutdown", deviceIdentifier)
-	_, err := shutdownCommand.Output()
-	return err
+	combinedOutput, err := shutdownCommand.CombinedOutput()
+	if err != nil {
+		return errors.New(fmt.Sprintf("Error: %v\nFull output: %v", err, string(combinedOutput)))
+	}
+
+	return nil
 }
 
 func (w *simCtlWrapper) Delete(deviceIdentifier string) error {
 	deleteCommand := exec.Command("xcrun", "simctl", "delete", deviceIdentifier)
-	_, err := deleteCommand.Output()
-	return err
+	combinedOutput, err := deleteCommand.CombinedOutput()
+	if err != nil {
+		return errors.New(fmt.Sprintf("Error: %v\nFull output: %v", err, string(combinedOutput)))
+	}
+
+	return nil
 }
 
 func (w *simCtlWrapper) PrintSpringboardServiceAvailability(deviceIdentifier string) (string, error) {
